@@ -1,7 +1,7 @@
 Kabisa quotes api
 =================
 
-This tiny api backend allows retrieving quotes from quotable.io.
+This tiny api backend allows retrieving quotes from https://quotable.io
 
 
 Features
@@ -25,12 +25,12 @@ To run the server, run::
 
   python3 manage.py runserver
 
-This will run the server on `http://localhost:8000/`
+This will run the server on http://localhost:8000/
 
 API endpoints
 -------------
 
-All endpoints are relative to the url root, which by default is `http://localhost:8000`.
+All endpoints are relative to the url root, which by default is http://localhost:8000.
 
 `/quote/`
   Return a random quote from `quotable.io`. If fetching a quote is not possible, returns a random cached quote from the database.
@@ -47,6 +47,8 @@ All endpoints are relative to the url root, which by default is `http://localhos
 
 Limitations and future improvements
 -----------------------------------
+
+The api listed in the assignment (http://quotes.stormconsultancy.co.uk/api) appears to be no longer available. I found https://api.quotable.io/random as a replacement.
 
 The dependencies of this app should be codified in a `requirements.txt` file or similar.
 
