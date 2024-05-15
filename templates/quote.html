@@ -1,0 +1,14 @@
+<html lang="en">
+    <head>
+        <title>Quote {{ quote.id }}</title>
+    </head>
+    <body>
+        <div style="text-align: center; font-size: 200%">
+            <p>id: <a href="{% url 'id' quote.id %}">{{ quote.id }}</a></p>
+            <p>By: {{ quote.author }}</p>
+            <p>{{ quote.quote }}</p>
+            <p>{{ quote.likes }} likes</p>
+            <a style="text-decoration: none; font-size: 150%" href="{% url 'like' quote.id %}">👍</a>
+        </div>
+    </body>
+</html>
