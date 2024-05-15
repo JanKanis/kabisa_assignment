@@ -8,7 +8,11 @@
             <p>By: {{ quote.author }}</p>
             <p>{{ quote.quote }}</p>
             <p>{{ quote.likes }} likes</p>
-            <a style="text-decoration: none; font-size: 150%" href="{% url 'like' quote.id %}">👍</a>
+            <form action="{% url 'like' quote.id %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" style="text-decoration: none; font-size: 150%" value="👍">
+            </form>
+{#            <a style="text-decoration: none; font-size: 150%" href="{% url 'like' quote.id %}">👍</a>#}
         </div>
     </body>
 </html>

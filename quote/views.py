@@ -1,13 +1,13 @@
 import random
-
 import requests
 import logging
 
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, Http404
 from simplejson import JSONDecodeError
 
+from . import REQUEST_URL
 from .models import Quote
 
 
@@ -20,23 +20,30 @@ def index(request):
 
     return do_response(request, q)
 
+
 def get(request, id):
     q = get_object_or_404(Quote, id=id)
     return do_response(request, q)
 
+
 def like(request, id):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
     q = get_object_or_404(Quote, id=id)
     q.likes += 1
     q.save()
     return redirect(q)
 
+
 def get_popular(request):
     q = get_popular_quote()
     return do_response(request, q)
 
+
 def do_response(request, quote):
-    return render(request, 'quote.html', {'quote': quote})
-    #return HttpResponse(quote, content_type='text/plain')
+    if request.accepts('text/html'):
+        return render(request, 'quote.html', {'quote': quote})
     if request.accepts('text/json'):
         return JsonResponse(quote.as_dict())
     if request.accepts('text/plain'):
@@ -46,6 +53,8 @@ def do_response(request, quote):
 
 def get_popular_quote():
     total_count = Quote.objects.all().count()
+    if total_count < 1:
+        raise Http404("No quotes available")
     likes_total = Quote.objects.filter(likes__gt=0).aggregate(Sum('likes', default=0))['likes__sum']
     rand = random.randint(0, likes_total+total_count-1)
 
@@ -57,12 +66,16 @@ def get_popular_quote():
     else:
         return Quote.objects.all()[rand-likes_total]
 
+
 def get_random_saved_quote():
     count = Quote.objects.count()
+    if count < 1:
+        raise Http404("No quotes available")
     return Quote.objects.all()[random.randint(0, count-1)]
 
+
 def get_random_quote():
-    r = requests.get('https://api.quotable.io/random')
+    r = requests.get(REQUEST_URL)
     if r.status_code != 200:
         logging.info(f"error getting quote: status {r.status_code}")
         raise QuoteFetchError("error fetching quote")
@@ -83,6 +96,7 @@ def get_random_quote():
         q.save()
 
     return q
+
 
 class QuoteFetchError(Exception):
     pass
